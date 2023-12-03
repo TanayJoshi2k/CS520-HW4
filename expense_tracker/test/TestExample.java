@@ -328,12 +328,12 @@ public class TestExample {
 	// Perform setup and check pre-conditions
 	ExpenseTrackerModel newModel = new ExpenseTrackerModel();
 	ExpenseTrackerView newView = new ExpenseTrackerView();
-	assertNotNull(model);
-	assertEquals(model.numberOfListeners(), 0);
-	assertNotNull(view);
+	assertNotNull(newModel); //change model to newModel
+	assertEquals(newModel.numberOfListeners(), 0);
+	assertNotNull(newView); //change view to newView
 	
 	// Call the unit under test
-        boolean registered = newModel.register(view);
+        boolean registered = newModel.register(newView); //change view to newView
 
 	// Check the post-conditions
 	assertTrue(registered);
