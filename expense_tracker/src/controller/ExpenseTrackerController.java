@@ -12,16 +12,30 @@ import model.Transaction;
 import model.Filter.TransactionFilter;
 
 public class ExpenseTrackerController {
-  
+
+  /**
+   * The data model
+   */
   private ExpenseTrackerModel model;
+
+  /**
+   * The UI of the app
+   */
   private ExpenseTrackerView view;
-  /** 
+  /**
    * The Controller is applying the Strategy design pattern.
-   * This is the has-a relationship with the Strategy class 
+   * This is the has-a relationship with the Strategy class
    * being used in the applyFilter method.
    */
   private TransactionFilter filter;
 
+  /**
+   * Constructor to initialize the model and the view
+   * 
+   * @param model - The transaction model
+   * @param view  - The view
+   * 
+   */
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
     this.view = view;
@@ -30,11 +44,24 @@ public class ExpenseTrackerController {
     this.model.register(this.view);
   }
 
+  /**
+   * This method sets the filter based on user selection
+   * 
+   * @param filter - Sets the filter to either amount or category filter.
+   */
   public void setFilter(TransactionFilter filter) {
     // Sets the Strategy class being used in the applyFilter method.
     this.filter = filter;
   }
 
+  /**
+   * This method checks if a transaction is valid.
+   * If valid, it adds a transaction to the model and the view, refreshes the view
+   * 
+   * @param amount   - amount field of a transaction
+   * @param category - category field of a transaction
+   * @return boolean - whether the transaction was added or not
+   */
   public boolean addTransaction(double amount, String category) {
     if (!InputValidation.isValidAmount(amount)) {
       return false;
@@ -42,15 +69,21 @@ public class ExpenseTrackerController {
     if (!InputValidation.isValidCategory(category)) {
       return false;
     }
-    
+
     Transaction t = new Transaction(amount, category);
     model.addTransaction(t);
     return true;
   }
 
+  /**
+   * This method applies the selected filter on the list of transactions - either
+   * filters by amount or category and also highlights the transactions which pass
+   * the filter check.
+   * If no filter is applied, it displays message dialog with the said error.
+   */
   public void applyFilter() {
-    //null check for filter
-    if(filter!=null){
+    // null check for filter
+    if (filter != null) {
       // Use the Strategy class to perform the desired filtering
       List<Transaction> transactions = model.getTransactions();
       List<Transaction> filteredTransactions = filter.filter(transactions);
@@ -62,14 +95,28 @@ public class ExpenseTrackerController {
         }
       }
       model.setMatchedFilterIndices(rowIndexes);
-    }
-    else{
+    } else {
       JOptionPane.showMessageDialog(view, "No filter applied");
-      view.toFront();}
+      view.toFront();
+    }
 
   }
 
-  //for undoing any selected transaction
+  // for undoing any selected transaction
+  /**
+   * Undoes a transaction based on the specified row index in the model's
+   * transactions list.
+   *
+   * @param rowIndex The index of the transaction to be undone.
+   * @return {@code true} if the undo operation was successful; {@code false}
+   *         otherwise.
+   *         Returns {@code true} when the specified row index is valid, and the
+   *         transaction
+   *         was successfully removed from the model. Returns {@code false} when
+   *         the specified
+   *         row index is out of bounds or the model does not contain a
+   *         transaction at that index.
+   */
   public boolean undoTransaction(int rowIndex) {
     if (rowIndex >= 0 && rowIndex < model.getTransactions().size()) {
       Transaction removedTransaction = model.getTransactions().get(rowIndex);
@@ -80,5 +127,5 @@ public class ExpenseTrackerController {
 
     // The undo was disallowed.
     return false;
-  }    
+  }
 }

@@ -16,32 +16,69 @@ import model.Transaction;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * View defines all the texts, labels, buttons, table models among other UI
+ * elements.
+ */
 public class ExpenseTrackerView extends JFrame implements ExpenseTrackerModelListener {
 
+  /**
+   * Transactions table in the view
+   */
   private JTable transactionsTable;
+
+  /**
+   * Add transaction button table
+   */
   private JButton addTransactionBtn;
+
+  /**
+   * Amount text field for a transaction
+   */
   private JFormattedTextField amountField;
+
+  /**
+   * Category text field for a transaction
+   */
   private JTextField categoryField;
   private DefaultTableModel model;
 
-  // private JTextField dateFilterField;
+  /**
+   * Category filter text field in the dialog box
+   */
   private JTextField categoryFilterField;
+
+  /**
+   * The category filter button which pops open the categoryFilterField
+   */
   private JButton categoryFilterBtn;
 
+  /**
+   * Amount filter text field in the dialog box
+   */
   private JTextField amountFilterField;
+
+  /**
+   * The amount filter button which pops open the amountFilterField
+   */
   private JButton amountFilterBtn;
 
+  /**
+   * Button to undo a transaction
+   */
   private JButton undoButton;
-  
 
+  /**
+   * Initializes the UI elements - JTable, button, amount and category filters,
+   * labels
+   */
   public ExpenseTrackerView() {
     setTitle("Expense Tracker"); // Set title
     setSize(600, 400); // Make GUI larger
 
-    String[] columnNames = {"serial", "Amount", "Category", "Date"};
+    String[] columnNames = { "serial", "Amount", "Category", "Date" };
     this.model = new ExpenseTrackerTableModel(columnNames, 0);
 
-    
     // Create table
     transactionsTable = new JTable(model);
 
@@ -54,10 +91,8 @@ public class ExpenseTrackerView extends JFrame implements ExpenseTrackerModelLis
     amountField = new JFormattedTextField(format);
     amountField.setColumns(10);
 
-    
     JLabel categoryLabel = new JLabel("Category:");
     categoryField = new JTextField(10);
-    
 
     JLabel categoryFilterLabel = new JLabel("Filter by Category:");
     categoryFilterField = new JTextField(10);
@@ -70,12 +105,11 @@ public class ExpenseTrackerView extends JFrame implements ExpenseTrackerModelLis
     // Initialize the undo button
     undoButton = new JButton("Undo");
 
-  
     // Layout components
     JPanel inputPanel = new JPanel();
     inputPanel.add(amountLabel);
     inputPanel.add(amountField);
-    inputPanel.add(categoryLabel); 
+    inputPanel.add(categoryLabel);
     inputPanel.add(categoryField);
     inputPanel.add(addTransactionBtn);
 
@@ -83,168 +117,249 @@ public class ExpenseTrackerView extends JFrame implements ExpenseTrackerModelLis
     buttonPanel.add(amountFilterBtn);
     buttonPanel.add(categoryFilterBtn);
     buttonPanel.add(undoButton);
-  
+
     // Add panels to frame
     add(inputPanel, BorderLayout.NORTH);
-    add(new JScrollPane(transactionsTable), BorderLayout.CENTER); 
+    add(new JScrollPane(transactionsTable), BorderLayout.CENTER);
     add(buttonPanel, BorderLayout.SOUTH);
-  
+
     // Set frame properties
     setSize(600, 400); // Increase the size for better visibility
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setVisible(true);
-  
-  
+
   }
 
+  /**
+   * This method return a reference to the view table model
+   * 
+   * @return table model
+   */
   public DefaultTableModel getTableModel() {
     return model;
   }
-    
 
+  /**
+   * This method return a reference to the transactions JTable
+   * 
+   * @return transactions table
+   */
   public JTable getTransactionsTable() {
     return transactionsTable;
   }
 
+  /**
+   * This method returns the user entered double-parsed transaction amount
+   * 
+   * @return the returns the user entered double-parsed transaction amount
+   */
   public double getAmountField() {
-    if(amountField.getText().isEmpty()) {
+    if (amountField.getText().isEmpty()) {
       return 0;
-    }else {
-    double amount = Double.parseDouble(amountField.getText());
-    return amount;
+    } else {
+      double amount = Double.parseDouble(amountField.getText());
+      return amount;
     }
   }
 
+  /**
+   * This method sets the amount field in the table for a transaction
+   * 
+   * @param amountField amount
+   */
   public void setAmountField(JFormattedTextField amountField) {
     this.amountField = amountField;
   }
 
-  
+  /**
+   * This method returns the user entered category of a transaction
+   * 
+   * @return the text in the category field
+   */
   public String getCategoryField() {
     return categoryField.getText();
   }
 
+  /**
+   * This method sets the category field of a
+   * transaction
+   * 
+   * @param categoryField User enetered category
+   */
   public void setCategoryField(JTextField categoryField) {
     this.categoryField = categoryField;
   }
 
+  /**
+   * This method adds action listener to the category filter button
+   * 
+   * @param listener - the listener to be attached to the button
+   */
   public void addApplyCategoryFilterListener(ActionListener listener) {
     categoryFilterBtn.addActionListener(listener);
   }
 
+  /**
+   * This method displays the dialog box to accept category filter user input
+   * 
+   * @return the JOptionPane dialog box
+   */
   public String getCategoryFilterInput() {
     return JOptionPane.showInputDialog(this, "Enter Category Filter:");
-}
+  }
 
-
+  /**
+   * This method adds action listener to the amount filter button
+   * 
+   * @param listener - the listener to be attached to the button
+   */
   public void addApplyAmountFilterListener(ActionListener listener) {
     amountFilterBtn.addActionListener(listener);
   }
 
+  /**
+   * This method reads the input amount filter entered by the user and type casts
+   * into Double
+   * 
+   * @return The parsed input amount
+   */
   public double getAmountFilterInput() {
     String input = JOptionPane.showInputDialog(this, "Enter Amount Filter:");
     try {
-        return Double.parseDouble(input);
+      return Double.parseDouble(input);
     } catch (NumberFormatException e) {
-        // Handle parsing error here
-        // You can show an error message or return a default value
-        return 0.0; // Default value (or any other appropriate value)
+      // Handle parsing error here
+      // You can show an error message or return a default value
+      return 0.0; // Default value (or any other appropriate value)
     }
   }
 
+  /**
+   * This method refreshes the table in the view to reflect the latest changes
+   * 
+   * @param transactions - list of transactions
+   *                     This method refreshes the transactions Jtable to reflect
+   *                     the latest changes in the data model
+   *                     It updates the row count, total amount.
+   */
   protected void refreshTable(List<Transaction> transactions) {
-      // Clear existing rows
-      model.setRowCount(0);
-      // Get row count
-      int rowNum = model.getRowCount();
-      double totalCost=0;
-      // Calculate total cost
-      for(Transaction t : transactions) {
-        totalCost+=t.getAmount();
-      }
-  
-      // Add rows from transactions list
-      for(Transaction t : transactions) {
-        model.addRow(new Object[]{rowNum+=1,t.getAmount(), t.getCategory(), t.getTimestamp()}); 
-      }
-      // Add total row
-      Object[] totalRow = {"Total", null, null, totalCost};
-      model.addRow(totalRow);
+    // Clear existing rows
+    model.setRowCount(0);
+    // Get row count
+    int rowNum = model.getRowCount();
+    double totalCost = 0;
+    // Calculate total cost
+    for (Transaction t : transactions) {
+      totalCost += t.getAmount();
+    }
 
-      // Clear the previous highlighting
-      transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer());
-      
-      // Fire table update
-      transactionsTable.updateUI();
-  
-    }  
-  
+    // Add rows from transactions list
+    for (Transaction t : transactions) {
+      model.addRow(new Object[] { rowNum += 1, t.getAmount(), t.getCategory(), t.getTimestamp() });
+    }
+    // Add total row
+    Object[] totalRow = { "Total", null, null, totalCost };
+    model.addRow(totalRow);
 
+    // Clear the previous highlighting
+    transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer());
+
+    // Fire table update
+    transactionsTable.updateUI();
+
+  }
+
+  /**
+   * This method returns a reference to the add transaction button
+   * 
+   * @return the reference to the add transaction button
+   */
   public JButton getAddTransactionBtn() {
     return addTransactionBtn;
   }
 
-
+  /**
+   * This method highlights the transactions which passes the filter check
+   * 
+   * @param rowIndexes the row indexes of the transactions list
+   */
   protected void highlightRows(List<Integer> rowIndexes) {
-      // The row indices are being used as hashcodes for the transactions.
-      // The row index directly maps to the the transaction index in the list.
-      transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-          @Override
-          public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                        boolean hasFocus, int row, int column) {
-              Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-	      if (isSelected) {
-		  c.setBackground(Color.BLUE);
-	      }
-              else if (rowIndexes.contains(row)) {
-                  c.setBackground(new Color(173, 255, 168)); // Light green
-              } else {
-                  c.setBackground(table.getBackground());
-              }
-              return c;
-          }
-      });
+    // The row indices are being used as hashcodes for the transactions.
+    // The row index directly maps to the the transaction index in the list.
+    transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+      @Override
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+          boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if (isSelected) {
+          c.setBackground(Color.BLUE);
+        } else if (rowIndexes.contains(row)) {
+          c.setBackground(new Color(173, 255, 168)); // Light green
+        } else {
+          c.setBackground(table.getBackground());
+        }
+        return c;
+      }
+    });
 
-      transactionsTable.repaint();
+    transactionsTable.repaint();
   }
 
+  /**
+   * Retrieves a list of transactions that are currently displayed in the
+   * transactions table.
+   * This method is designed to support testability by allowing access to the
+   * displayed transactions.
+   *
+   * @return A list of Transaction objects representing the displayed
+   *         transactions.
+   */
   public List<Transaction> getDisplayedTransactions() {
-      // To support testability
-      List<Transaction> displayedTransactions = new ArrayList<>();
-      for (int i = 0; i < transactionsTable.getRowCount(); i++) {
-	  TableCellRenderer renderer = transactionsTable.getCellRenderer(i, 0);
-	  Component component = transactionsTable.prepareRenderer(renderer, i, 0);
-	  
-	  // Check if the row is highlighted based on the background color
-	  if (component.getBackground().equals(new Color(173, 255, 168))) {
-	      Object amountObj = transactionsTable.getValueAt(i, 1); // Assuming amount is in column 1
-	      Object categoryObj = transactionsTable.getValueAt(i, 2); // Assuming category is in column 2
-	      
-	      if (amountObj != null && categoryObj != null) {
-		  double amount = (double) amountObj;
-		  String category = (String) categoryObj;
-		  displayedTransactions.add(new Transaction(amount, category));
-	      }
-	  }
+    // To support testability
+    List<Transaction> displayedTransactions = new ArrayList<>();
+    for (int i = 0; i < transactionsTable.getRowCount(); i++) {
+      TableCellRenderer renderer = transactionsTable.getCellRenderer(i, 0);
+      Component component = transactionsTable.prepareRenderer(renderer, i, 0);
+
+      // Check if the row is highlighted based on the background color
+      if (component.getBackground().equals(new Color(173, 255, 168))) {
+        Object amountObj = transactionsTable.getValueAt(i, 1); // Assuming amount is in column 1
+        Object categoryObj = transactionsTable.getValueAt(i, 2); // Assuming category is in column 2
+
+        if (amountObj != null && categoryObj != null) {
+          double amount = (double) amountObj;
+          String category = (String) categoryObj;
+          displayedTransactions.add(new Transaction(amount, category));
+        }
       }
-      return displayedTransactions;
+    }
+    return displayedTransactions;
   }
 
-  // Method to add action listener to the undo button
+  /**
+   * @param listener
+   *                 Adds action listener to the passed listener
+   */
   public void addUndoButtonListener(ActionListener listener) {
-      undoButton.addActionListener(listener);
+    undoButton.addActionListener(listener);
   }
 
-  // Method to get the selected row index from the table
+  /**
+   * @return the index of the selected row
+   */
   public int getSelectedRowIndex() {
-      return transactionsTable.getSelectedRow();
+    return transactionsTable.getSelectedRow();
   }
 
+  /**
+   * @param model refreshes the view with the latest modelt ransactions
+   *              Highlights the rows that match the filter
+   */
   public void update(ExpenseTrackerModel model) {
-      refreshTable(model.getTransactions());
-      if (model.getMatchedFilterIndices().size() > 0) {
-	  highlightRows(model.getMatchedFilterIndices());
-      }
+    refreshTable(model.getTransactions());
+    if (model.getMatchedFilterIndices().size() > 0) {
+      highlightRows(model.getMatchedFilterIndices());
+    }
   }
-    
+
 }
