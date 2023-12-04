@@ -8,10 +8,11 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import model.ExpenseTrackerModel;
+import model.ExpenseTrackerModelListener;
 import model.Transaction;
 import model.Filter.TransactionFilter;
 
-public class ExpenseTrackerController {
+public class ExpenseTrackerController implements ExpenseTrackerModelListener {
 
   /**
    * The data model
@@ -41,7 +42,7 @@ public class ExpenseTrackerController {
     this.view = view;
     // For the MVC architecture pattern, the Observer design pattern is being
     // used to update the View after manipulating the Model.
-    this.model.register(this.view);
+    this.model.register(this);
   }
 
   /**
@@ -127,5 +128,10 @@ public class ExpenseTrackerController {
 
     // The undo was disallowed.
     return false;
+  }
+
+  @Override
+  public void update(ExpenseTrackerModel model) {
+    view.update(model);
   }
 }

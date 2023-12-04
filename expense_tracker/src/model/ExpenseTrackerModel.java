@@ -22,7 +22,7 @@ public class ExpenseTrackerModel {
   /**
    * Set of listeners to send updates to
    */
-  protected Set<ExpenseTrackerModelListener> listeners = new HashSet<>();
+  protected Set<ExpenseTrackerModelListener> listeners = new HashSet<ExpenseTrackerModelListener>();
   // This is applying the Observer design pattern.
   // Specifically, this is the Observable class.
 
